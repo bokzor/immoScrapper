@@ -1,5 +1,6 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
 import { AxiosResponse, AxiosStatic } from 'axios';
+import { debug } from './utils';
 
 const axios: AxiosStatic = require('axios');
 const cheerio = require('cheerio');
@@ -8,9 +9,6 @@ const isNullOrEmpty = (toCheck: string) => {
   return !toCheck || toCheck === '';
 };
 
-const debug = (log: string, ...params: any[]) => {
-  console.log(log, ...params);
-};
 
 export class Scraper {
   public currentPage = 0;
@@ -22,7 +20,7 @@ export class Scraper {
   private itemsSelector: string;
   private infosToFetch: Map<string, string>;
   private nextPageSelector: string;
-  private items$ = new Subject();
+  private items$: Subscriber<any>;
 
   private static getAttrValue(elem: Cheerio, selector: string, attr: string) {
     switch (attr) {
@@ -65,8 +63,11 @@ export class Scraper {
   }
 
   go(): Observable<any> {
-    this.goToNextPage(this.url);
-    return this.items$;
+    return new Observable((observer) => {
+      this.items$ = observer;
+      this.goToNextPage(this.url);
+    });
+
   }
 
   private handleHtml(html: string) {

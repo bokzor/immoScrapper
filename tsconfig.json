@@ -11,8 +11,9 @@
     "noUnusedLocals": true,
     "pretty": true,
     "removeComments": false,
-    "sourceMap": false,
+    "sourceMap": true,
     "suppressImplicitAnyIndexErrors": true,
-    "target": "es6"
+    "target": "es6",
+    "noUnusedLocals": false
   }
 }
